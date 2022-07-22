@@ -1,12 +1,15 @@
 package com.hakanboranbay.bankingsystem.models;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -129,5 +132,34 @@ public class SerializableAccount implements IAccount{
 		this.update(recievedAccount);
 		return true;
 	}
+
+	public ArrayList<String> transactionLogs(long idNumber) {
+		
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader("C:\\\\Users\\\\hakan\\\\Desktop\\\\Akbank Java Spring Bootcamp\\\\CodingPractises\\\\bankingsystem\\\\logs.txt"));
+			String line = reader.readLine();
+			ArrayList<String> list = new ArrayList<String>();
+			while (line != null) {
+				String[] parts = line.split(" ");
+				if (parts[0].equals(idNumber + "")) {
+					if (parts[1].equals("deposit")) {
+						list.add(idNumber + " nolu hesaba " + parts[3] + " " + findByIdNumber(idNumber).getType() + " yatırılmıştır.");
+					}else {
+						list.add(idNumber+" nolu hesaptan " + parts[5] + " nolu hesaba " + parts[3] + " " + findByIdNumber(idNumber).getType() + " gönderilmiştir.");
+					}
+					line = reader.readLine();
+				}else {
+					line = reader.readLine();
+				}
+			}  
+			reader.close();
+			return list;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 
 }

@@ -7,5 +7,4 @@ public class AccountDepositRequest {
 	
 	private double amount;
 	private long idNumber;
-	private String type;
 }

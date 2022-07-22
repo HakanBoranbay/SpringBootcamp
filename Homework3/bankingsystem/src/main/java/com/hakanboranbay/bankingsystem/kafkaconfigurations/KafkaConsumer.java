@@ -16,8 +16,8 @@ public class KafkaConsumer {
 	public void listenLogs(@Payload String message) {
 		BufferedWriter bw;
 		try {
-			bw = new BufferedWriter(new FileWriter(new File("C:\\Users\\hakan\\Desktop\\Akbank Java Spring Bootcamp\\CodingPractises\\bankingsystem\\logs.txt")));
-			bw.write(message + "\n");
+			bw = new BufferedWriter(new FileWriter(new File("C:\\Users\\hakan\\Desktop\\Akbank Java Spring Bootcamp\\CodingPractises\\bankingsystem\\logs.txt"), true));
+			bw.append(message + "\n");
 			bw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

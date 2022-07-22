@@ -1,1 +1,4 @@
-3768783452 deposit	amount: 50.0
+3768783452 transfer amount: 300 recieved_account: 4205388906
+3768783452 deposit amount: 3000.0
+3768783452 deposit amount: 300.0
+3768783452 transfer amount: 300 recieved_account: 4205388906

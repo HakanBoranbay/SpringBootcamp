@@ -1,8 +1,11 @@
 package com.hakanboranbay.bankingsystem.controllers;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hakanboranbay.bankingsystem.interfaces.IAccount;
 import com.hakanboranbay.bankingsystem.models.Account;
+import com.hakanboranbay.bankingsystem.models.SerializableAccount;
 import com.hakanboranbay.bankingsystem.requests.AccountCreateRequest;
 import com.hakanboranbay.bankingsystem.requests.AccountDepositRequest;
 import com.hakanboranbay.bankingsystem.requests.AccountTransferRequest;
@@ -29,6 +33,9 @@ public class AccountController {
 	
 	@Autowired
 	private IAccount iAccount;	
+	
+	@Autowired
+	private SerializableAccount serializableAccount;
 
     @PostMapping("/accounts")
     public ResponseEntity<?> create(@RequestBody AccountCreateRequest request) {
@@ -67,7 +74,7 @@ public class AccountController {
     	Account a = this.iAccount.findByIdNumber(idNumber);
     	a.setBalance(a.getBalance() + request.getAmount());
     	this.iAccount.update(a);
-    	String message = idNumber + " deposit	amount: " + request.getAmount();
+    	String message = idNumber + " deposit amount: " + request.getAmount();
     	producer.send("logs", message);
 		return ResponseEntity.ok().lastModified(a.getLastModified()).body(a);
 		
@@ -79,7 +86,7 @@ public class AccountController {
     	if (result) {
     		TransferSuccessResponse response = new TransferSuccessResponse();
     		response.setMessage("Transfer Succesful.");
-    		String message = idNumber + " transfer	amount" + request.getAmount() + ", recieved_account: " + request.getRecievedAccountIdNumber(); 
+    		String message = idNumber + " transfer amount: " + request.getAmount() + " recieved_account: " + request.getRecievedAccountIdNumber(); 
     		producer.send("logs", message);
     		return ResponseEntity.ok().body(response);
     	}
@@ -87,4 +94,10 @@ public class AccountController {
     	response.setMessage("Insufficient balance.");
     	return ResponseEntity.badRequest().body(response);
     }
+    
+    @CrossOrigin(origins={"http://localhost"})
+	@GetMapping(path="/accounts/logs/{idNumber}")
+	public ArrayList<String> transactionLogs(@PathVariable long idNumber) {
+    	return this.serializableAccount.transactionLogs(idNumber);
+	}
 }
